@@ -41,50 +41,6 @@ BASE$DES_DEFL_LOG <- log(BASE$DESPESA_DEFLACIONADA)
 
 ###################### GRÁFICO 1 ##########################################################
 
-##BARPLOT DINHEIRO
-
-plot_data <- aggregate(BASE$DESPESA_DEFLACIONADA, by = list(BASE$SEXO_COD, BASE$ANO), FUN = sum)
-
-plot_data <- plot_data[ which(plot_data$Group.1 != 'NÃO INFORMADO'),]
-
-plot_data <- transform(plot_data, percentage = ave(x, Group.2, FUN = function(x) (as.numeric(paste0(round(x/sum(x), 3)*100)))))
-
-ggplot(plot_data, aes(Group.1, percentage), xlab="") +
-  geom_bar(stat="identity", width=.5, position = "dodge")+  
-  facet_wrap(~Group.2) +
-  ylab("%") + xlab("") + theme(axis.text=element_text(size=12),
-                               axis.title=element_text(size=14)) +
-  geom_text(aes(label = paste0(plot_data$percentage)), position = position_stack(vjust = 1.1),
-            size = 4.0)
-
-
-###################### GRÁFICO 2 ##########################################################
-plot_data <- transform(BASE, percentage = ave(DESPESA_DEFLACIONADA, UF, ANO, FUN = function(x) as.numeric(paste0(round(x/sum(x), 3)*100))))
-plot_data <- plot_data[ which(plot_data$SEXO_COD != 'NÃO INFORMADO'),]
-
-##BOX PLOT INDICE
-
-ggplot(plot_data, aes(x=UF, y = percentage,  color=SEXO_COD)) +
-  geom_boxplot(na.rm = TRUE) + labs(title="",x="", y = "%") + theme(axis.text=element_text(size=12),
-                                                                    axis.title=element_text(size=14)) +
-                                                                theme(legend.title = element_blank())
-
-
-###################### GRÁFICO 3 ##########################################################
-A <- aggregate(BASE$DESPESA_DEFLACIONADA, by = list(BASE$SEXO_COD, BASE$UF), FUN = sum)
-A <- A[ which(A$Group.1 != 'NÃO INFORMADO'),]
-A <- transform(A, percentage = ave(x, Group.2, FUN = function(x) as.numeric(paste0(round(x/sum(x), 3)*100))))
-
-
-ggplot(A, aes(x=Group.2, y=percentage, fill=Group.1), xlab = "") + 
-  scale_y_continuous(limits=c(0,100), expand = c(0,0)) +
-  geom_bar(position=position_dodge(), stat="identity", width=.5) +
-  ylab("%") + xlab("") + theme(axis.text=element_text(size=12),
-                               axis.title=element_text(size=14))+
-  theme(legend.title = element_blank())
-
-###################### GRÁFICO 4 ##########################################################
-
 ##REMOVENDO CASOS NAN
 COR <- BASE[!is.infinite((BASE$VOTOS_LOG)),]
 COR <- COR[!is.infinite((COR$DES_DEFL_LOG)),]
@@ -105,7 +61,7 @@ ggscatter(COR, x = "VOTOS_LOG", y = "DES_DEFL_LOG",
   theme(legend.title = element_blank())
 
 
-###################### GRÁFICO 5 ##########################################################
+###################### GRÁFICO 2 ##########################################################
 
 options( scipen = 1 )
 ggscatter(COR, x = "VOTOS_LOG", y = "DES_DEFL_LOG",
@@ -120,18 +76,18 @@ ggscatter(COR, x = "VOTOS_LOG", y = "DES_DEFL_LOG",
   stat_cor(method = "pearson", label.y.npc = 0.3, aes(color = SEXO_COD)) +
   theme(legend.title = element_blank())
 
-###################### GRÁFICO 6 e regressao ##########################################################
+###################### GRÁFICO 3 e regressao ##########################################################
 
 ## CRIANDO VARIÁVEL DE MAGNITUDE DO DISTRITO PARA CONTROLE
 BASE$MAG_DIS <- ifelse(BASE$UF == 'TO', 24, ifelse(BASE$UF == 'SE', 24, ifelse(BASE$UF == 'RR', 24,
-                                            ifelse(BASE$UF == 'RO', 24, ifelse(BASE$UF == 'RN', 24, ifelse(BASE$UF == 'MS', 24,
-                                            ifelse(BASE$UF == 'MT', 24, ifelse(BASE$UF == 'DF', 24, ifelse(BASE$UF == 'AM', 24,
-                                            ifelse(BASE$UF == 'AP', 24, ifelse(BASE$UF == 'AC', 24, ifelse(BASE$UF == 'AL', 27,
-                                            ifelse(BASE$UF == 'PI', 30, ifelse(BASE$UF == 'ES', 30, ifelse(BASE$UF == 'PB', 36,
-                                            ifelse(BASE$UF == 'SC', 40, ifelse(BASE$UF == 'PA', 41, ifelse(BASE$UF == 'GO', 41,
-                                            ifelse(BASE$UF == 'MA', 42, ifelse(BASE$UF == 'CE', 46, ifelse(BASE$UF == 'PE', 49,
-                                            ifelse(BASE$UF == 'PR', 54, ifelse(BASE$UF == 'RS', 55, ifelse(BASE$UF == 'BA', 63,
-                                            ifelse(BASE$UF == 'RJ', 70, ifelse(BASE$UF == 'MG', 77, ifelse(BASE$UF == 'SP', 94, NA)))))))))))))))))))))))))))
+                                                                               ifelse(BASE$UF == 'RO', 24, ifelse(BASE$UF == 'RN', 24, ifelse(BASE$UF == 'MS', 24,
+                                                                              ifelse(BASE$UF == 'MT', 24, ifelse(BASE$UF == 'DF', 24, ifelse(BASE$UF == 'AM', 24,
+                                                                              ifelse(BASE$UF == 'AP', 24, ifelse(BASE$UF == 'AC', 24, ifelse(BASE$UF == 'AL', 27,
+                                                                              ifelse(BASE$UF == 'PI', 30, ifelse(BASE$UF == 'ES', 30, ifelse(BASE$UF == 'PB', 36,
+                                                                              ifelse(BASE$UF == 'SC', 40, ifelse(BASE$UF == 'PA', 41, ifelse(BASE$UF == 'GO', 41,
+                                                                              ifelse(BASE$UF == 'MA', 42, ifelse(BASE$UF == 'CE', 46, ifelse(BASE$UF == 'PE', 49,
+                                                                              ifelse(BASE$UF == 'PR', 54, ifelse(BASE$UF == 'RS', 55, ifelse(BASE$UF == 'BA', 63,
+                                                                              ifelse(BASE$UF == 'RJ', 70, ifelse(BASE$UF == 'MG', 77, ifelse(BASE$UF == 'SP', 94, NA)))))))))))))))))))))))))))
 
 ##REMOVENDO CASOS NAN
 COR <- BASE[!is.infinite((BASE$VOTOS_LOG)),]
@@ -140,6 +96,7 @@ COR <- COR[!is.infinite((COR$DES_DEFL_LOG)),]
 ##REGRESSÃO 1 e 2
 M2 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + DES_DEFL_LOG*SEXO + MAG_DIS, data = COR)
 M1 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + MAG_DIS, data = COR)
+
 
 ##TABELA 1 E 2
 stargazer(M1, M2,type="html", 
@@ -167,12 +124,12 @@ plot(M2, 2)
 plot(M2, 3)
 plot(M2, 4)
 
-###################### GRÁFICO 7 ############################################################
+###################### GRÁFICO 4 ############################################################
 
 interact_plot(M2, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)",
               modx.labels = c("MASCULINO", "FEMININO"), interval = TRUE)
 
-###################### GRÁFICO 8 e regressao ############################################################
+###################### GRÁFICO 5 e regressao ############################################################
 
 ##REMOVENDO 2002 e ALTERANDO INCUMBENCIA
 
@@ -212,16 +169,15 @@ plot(M4, 2)
 plot(M4, 3)
 plot(M4, 4)
 
-###################### GRÁFICO 9 ############################################################
+###################### GRÁFICO 6 ############################################################
 
 interact_plot(M4, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)",
               modx.labels = c("MASCULINO", "FEMININO"), interval = TRUE)
 
-###################### GRÁFICO 10 ############################################################
+###################### GRÁFICO 7 ############################################################
 
 interact_plot(M4, pred = "INCUMBENTE", modx = "SEXO", x.label  = "Incumbente", y.label = "Votos (log.)",
               modx.labels = c("MASCULINO", "FEMININO"), interval = TRUE) 
-
 
 ###################### Regressao por ano ############################################################
 
@@ -270,9 +226,9 @@ interact_plot(M_2_06, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa 
 interact_plot(M_2_10, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)", interval = TRUE)
 interact_plot(M_2_14, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)", interval = TRUE)
 
-###################### GRAFICOS 11 e 12 ##########################################################
+###################### GRAFICOS 8 e 9 ##########################################################
 
-##ESTATISTICA DESCRITIVA DO GRAFICO 11
+##ESTATISTICA DESCRITIVA DO GRAFICO 8
 
 fivenum(BASE$DESPESA_DEFLACIONADA)
 mean(BASE$DESPESA_DEFLACIONADA)
@@ -285,7 +241,7 @@ qplot(BASE$DESPESA_DEFLACIONADA, geom="histogram", xlab = "") +
   theme(axis.text=element_text(size=12),
         axis.title=element_text(size=14)) 
 
-##ESTATISTICA DESCRITIVA DO GRAFICO 12
+##ESTATISTICA DESCRITIVA DO GRAFICO 9
 
 fivenum(BASE$DES_DEFL_LOG)
 
@@ -295,6 +251,50 @@ qplot(BASE$DES_DEFL_LOG, geom="histogram", xlab = "") +
   ylab("Contagem") + xlab("R$") +
   theme(axis.text=element_text(size=12),
         axis.title=element_text(size=14))
+
+###################### GRÁFICO 10 ##########################################################
+
+##BARPLOT DINHEIRO
+
+plot_data <- aggregate(BASE$DESPESA_DEFLACIONADA, by = list(BASE$SEXO_COD, BASE$ANO), FUN = sum)
+
+plot_data <- plot_data[ which(plot_data$Group.1 != 'NÃO INFORMADO'),]
+
+plot_data <- transform(plot_data, percentage = ave(x, Group.2, FUN = function(x) (as.numeric(paste0(round(x/sum(x), 3)*100)))))
+
+ggplot(plot_data, aes(Group.1, percentage), xlab="") +
+  geom_bar(stat="identity", width=.5, position = "dodge")+  
+  facet_wrap(~Group.2) +
+  ylab("%") + xlab("") + theme(axis.text=element_text(size=12),
+                               axis.title=element_text(size=14)) +
+  geom_text(aes(label = paste0(plot_data$percentage)), position = position_stack(vjust = 1.1),
+            size = 4.0)
+
+
+###################### GRÁFICO 11 ##########################################################
+plot_data <- transform(BASE, percentage = ave(DESPESA_DEFLACIONADA, UF, ANO, FUN = function(x) as.numeric(paste0(round(x/sum(x), 3)*100))))
+plot_data <- plot_data[ which(plot_data$SEXO_COD != 'NÃO INFORMADO'),]
+
+##BOX PLOT INDICE
+
+ggplot(plot_data, aes(x=UF, y = percentage,  color=SEXO_COD)) +
+  geom_boxplot(na.rm = TRUE) + labs(title="",x="", y = "%") + theme(axis.text=element_text(size=12),
+                                                                    axis.title=element_text(size=14)) +
+  theme(legend.title = element_blank())
+
+
+###################### GRÁFICO 12 ##########################################################
+A <- aggregate(BASE$DESPESA_DEFLACIONADA, by = list(BASE$SEXO_COD, BASE$UF), FUN = sum)
+A <- A[ which(A$Group.1 != 'NÃO INFORMADO'),]
+A <- transform(A, percentage = ave(x, Group.2, FUN = function(x) as.numeric(paste0(round(x/sum(x), 3)*100))))
+
+
+ggplot(A, aes(x=Group.2, y=percentage, fill=Group.1), xlab = "") + 
+  scale_y_continuous(limits=c(0,100), expand = c(0,0)) +
+  geom_bar(position=position_dodge(), stat="identity", width=.5) +
+  ylab("%") + xlab("") + theme(axis.text=element_text(size=12),
+                               axis.title=element_text(size=14))+
+  theme(legend.title = element_blank())
 
 ################################# GRAFICO 13 #####################################################
 
@@ -387,9 +387,6 @@ GASTOS_ANO$x <- NULL
 GASTOS_ANO <- GASTOS_ANO %>% group_by(UF, ANO) 
 
 ##SELECIONANDO APENAS AS MULHERES
-
-
-
 GASTOS_ANO <- transform(GASTOS_ANO, percentage = ave(DESPESA, UF, ANO, FUN = function(x) as.numeric(paste0(round(x/sum(x), 3)*100))))
 GASTOS_ANO <- GASTOS_ANO[ which(GASTOS_ANO$SEXO == 'FEMININO'),]
 
