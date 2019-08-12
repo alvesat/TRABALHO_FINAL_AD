@@ -112,17 +112,19 @@ coef_names <- c("Despesa Deflacionada" = "DES_DEFL_LOG" , "Sexo" = "SEXO", "Magn
 plot_summs(M1, M2, 
            scale = TRUE, robust = TRUE, inner_ci_level = .95, model.names = c("Modelo 1", "Modelo 2"), coefs = coef_names)
 
+
 # ajustes dos modelos
 
-plot(M1, 1)
-plot(M1, 2)
-plot(M1, 3)
-plot(M1, 4)
+  #### M1 ####
 
-plot(M2, 1)
-plot(M2, 2)
-plot(M2, 3)
-plot(M2, 4)
+par(mfrow = c(2, 2))
+plot(M1)
+
+  
+  #### M2 ####
+
+par(mfrow = c(2, 2))
+plot(M2)
 
 ###################### GRÁFICO 4 ############################################################
 
@@ -159,15 +161,16 @@ plot_summs(M3, M4, scale = TRUE, inner_ci_level = .9,
 
 # ajustes dos modelos
 
-plot(M3, 1)
-plot(M3, 2)
-plot(M3, 3)
-plot(M3, 4)
+#### M3 ####
 
-plot(M4, 1)
-plot(M4, 2)
-plot(M4, 3)
-plot(M4, 4)
+par(mfrow = c(2, 2))
+plot(M3)
+
+
+#### M4 ####
+
+par(mfrow = c(2, 2))
+plot(M4)
 
 ###################### GRÁFICO 6 ############################################################
 
@@ -178,53 +181,6 @@ interact_plot(M4, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (def
 
 interact_plot(M4, pred = "INCUMBENTE", modx = "SEXO", x.label  = "Incumbente", y.label = "Votos (log.)",
               modx.labels = c("MASCULINO", "FEMININO"), interval = TRUE) 
-
-###################### Regressao por ano ############################################################
-
-##02
-
-COR_02 <- COR [which(COR$ANO == '2002'),]
-
-M_2_02 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + DES_DEFL_LOG*SEXO + MAG_DIS, data = COR_02)
-M_1_02 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + MAG_DIS, data = COR_02)
-
-##06
-
-COR_06 <- COR [which(COR$ANO == '2006'),]
-
-M_2_06 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + DES_DEFL_LOG*SEXO + MAG_DIS, data = COR_06)
-M_1_06 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + MAG_DIS, data = COR_06)
-
-##10
-
-COR_10 <- COR [which(COR$ANO == '2010'),]
-
-M_2_10 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + DES_DEFL_LOG*SEXO + MAG_DIS, data = COR_10)
-M_1_10 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + MAG_DIS, data = COR_10)
-
-##14
-
-COR_14 <- COR [which(COR$ANO == '2014'),]
-
-M_2_14 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + DES_DEFL_LOG*SEXO + MAG_DIS, data = COR_14)
-M_1_14 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + MAG_DIS, data = COR_14)
-
-##EXPORTANDO TABELA
-stargazer(M_1_02, M_2_02, M_1_06, M_2_06, M_1_10, M_2_10, M_1_14, M_2_14, type="html", 
-          column.labels = c("2002", "2002(I)", "2006", "2006(I)","2010", "2010(I)","2014", "2014(I)"), 
-          intercept.bottom = FALSE, 
-          single.row=FALSE,     
-          notes.append = FALSE, 
-          header=FALSE,
-          decimal.mark = ",") 
-
-###################### GRAFICOS TERMO INTERATIVO ANO ##########################################################
-
-
-interact_plot(M_2_02, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)", interval = TRUE)
-interact_plot(M_2_06, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)", interval = TRUE)
-interact_plot(M_2_10, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)", interval = TRUE)
-interact_plot(M_2_14, pred = "DES_DEFL_LOG", modx = "SEXO", x.label  = "Despesa (defl. e log)", y.label = "Votos (log.)", interval = TRUE)
 
 ###################### GRAFICOS 8 e 9 ##########################################################
 
@@ -400,3 +356,104 @@ ggplot(data=GASTOS_ANO, aes(x=UF, y=percentage)) +
   ylab("%") + xlab("") + theme(axis.text=element_text(size=12, face = 'bold'),
                                axis.title=element_text(size=14),
                                strip.text = element_text(size=12))
+
+
+
+#################### REGRESSÕES DOS MODELOS 1,2,3 E  4 COM AJUSTES DE OUTLIER ######################################
+
+ ## VOTOS
+
+Sem_out <- COR
+
+qnt <- quantile(Sem_out$VOTOS_LOG, probs=c(.25, .75), na.rm = T)
+caps <- quantile(Sem_out$VOTOS_LOG, probs=c(.05, .95), na.rm = T)
+H <- 1.5 * IQR(Sem_out$VOTOS_LOG, na.rm = T)
+
+Sem_out$VOTOS_LOG[Sem_out$VOTOS_LOG < (qnt[1] - H)] <- caps[1]
+Sem_out$VOTOS_LOG[Sem_out$VOTOS_LOG > (qnt[2] + H)] <- caps[2]
+
+
+  ## DESPESA
+
+qnt <- quantile(Sem_out$DES_DEFL_LOG, probs=c(.25, .75), na.rm = T)
+caps <- quantile(Sem_out$DES_DEFL_LOG, probs=c(.05, .95), na.rm = T)
+H <- 1.5 * IQR(Sem_out$DES_DEFL_LOG, na.rm = T)
+
+Sem_out$DES_DEFL_LOG[Sem_out$DES_DEFL_LOG < (qnt[1] - H)] <- caps[1]
+Sem_out$DES_DEFL_LOG[Sem_out$DES_DEFL_LOG> (qnt[2] + H)] <- caps[2]
+
+##REGRESSÃO 1 e 2
+M2 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + DES_DEFL_LOG*SEXO + MAG_DIS, data = Sem_out)
+M1 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + MAG_DIS, data = Sem_out)
+
+summary(M1)
+coef_names <- c("Despesa Deflacionada" = "DES_DEFL_LOG" , "Sexo" = "SEXO", "Magnitude do Distrito" = "MAG_DIS",
+                "Des. Defl x Sexo" = "DES_DEFL_LOG:SEXO")
+
+plot_summs(M1, M2, scale = TRUE, robust = TRUE, inner_ci_level = .95, model.names = c("Modelo 1", "Modelo 2"), coefs = coef_names)
+
+
+
+# ajustes dos modelos
+
+#### M1 ####
+
+par(mfrow = c(2, 2))
+plot(M1)
+
+
+#### M2 ####
+
+par(mfrow = c(2, 2))
+plot(M2)
+
+
+##REGRESSÃO COM INCUMBENCIA
+
+##REMOVENDO 2002 e ALTERANDO INCUMBENCIA
+
+Sem_out_06 <- Sem_out[which(Sem_out$ANO != '2002'),]
+
+Sem_out_06$INCUMBENTE <- ifelse(Sem_out_06$INCUMBENTE =='Incumbente', 1, ifelse(Sem_out_06$INCUMBENTE=='Desafiante', 0, NA))
+
+#
+
+M3 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + INCUMBENTE + MAG_DIS, data = Sem_out_06)
+M4 <- lm(formula = VOTOS_LOG ~ DES_DEFL_LOG + SEXO + INCUMBENTE + MAG_DIS + DES_DEFL_LOG*SEXO + INCUMBENTE*SEXO, data = Sem_out_06)
+
+
+coef_names <- c("Despesa Deflacionada" = "DES_DEFL_LOG" , "Sexo" = "SEXO", "Magnitude do Distrito" = "MAG_DIS",
+                "Des. Defl x Sexo" = "DES_DEFL_LOG:SEXO", "Incumbente" = "INCUMBENTE", "Incumbente x Sexo" = "SEXO:INCUMBENTE" )
+
+plot_summs(M3, M4, scale = TRUE, inner_ci_level = .9,
+           model.names = c("Modelo 3", "Modelo 4"), coefs = coef_names)
+
+# ajustes dos modelos
+
+#### M3 ####
+
+par(mfrow = c(2, 2))
+plot(M3)
+
+
+#### M4 ####
+
+par(mfrow = c(2, 2))
+plot(M4)
+
+
+################ TABELAS
+
+stargazer(M1, M2,type="html", 
+          column.labels = c("Main Effects", "Interaction"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE)
+
+stargazer(M3, M4,type="html", 
+          column.labels = c("Main Effects", "Interaction"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE)
