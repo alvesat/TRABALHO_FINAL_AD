@@ -3,6 +3,7 @@
  
 ##CARREGANDO PACOTES
 library(dplyr)
+library(devtools)
 library(ggplot2)
 library(arm)
 library(tidyr)
@@ -14,7 +15,6 @@ library(ggpmisc)
 library(broom)
 library(car) 
 library(stargazer) 
-library(effects) 
 library(sjPlot) 
 library(sjmisc) 
 library(ggplot2)
@@ -28,7 +28,7 @@ library(Rmisc)
 library(huxtable)
 library(mctest)
 library(DescTools)
-
+library(effects)
 
 
 ##LENDO BANCO
@@ -452,9 +452,6 @@ ggplot(data=GASTOS_ANO, aes(x=UF, y=percentage)) +
   ylab("%") + xlab("") + theme(axis.text=element_text(size=12, face = 'bold'),
                                axis.title=element_text(size=14),
                                strip.text = element_text(size=12))
-
-
-
 
 
 
