@@ -141,7 +141,7 @@ COR$INCUMBENTE <- as.numeric(COR$INCUMBENTE)
 COR$SEXO <- factor(COR$SEXO, levels = c(0,1), labels = c("Masculino", "Feminino"))
 COR$INCUMBENTE <- factor(COR$INCUMBENTE, levels = c(0,1), labels = c("Não Incumbente", "Incumbente"))
 
-M1 <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO  + MAG_DIS + UF + ANO_DIC + INCUMBENTE, data = COR)
+M1 <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE, data = COR)
 M2 <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE + DES_PER_LOG*SEXO, data = COR)
 M3 <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE + INCUMBENTE*SEXO, data = COR)
 M4 <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE + INCUMBENTE*SEXO + DES_PER_LOG*SEXO, data = COR)
@@ -213,12 +213,6 @@ par(mfrow = c(2, 2))
 plot(M5)
 
 
- ###### MULTICOLINEARIDADE #######
-library(tidyverse)
-X <- COR %>% select(SEXO, INCUMBENTE, DES_PER_LOG, VOTOS_PER_LOG)
-
-omcdiag(X,X$DES_PER_LOG)
-
 
 ###################### GRÁFICO 4 ############################################################
 
@@ -254,7 +248,7 @@ Sem_out$VOTOS_PER_LOG <- Winsorize(Sem_out$VOTOS_PER_LOG)
 
 ### REGRESSÕES
 
-M1_o <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO  + MAG_DIS + UF + ANO_DIC + INCUMBENTE, data = Sem_out)
+M1_o <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE, data = Sem_out)
 M2_o <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE + DES_PER_LOG*SEXO, data = Sem_out)
 M3_o <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE + INCUMBENTE*SEXO, data = Sem_out)
 M4_o <- lm(formula = VOTOS_PER_LOG ~ DES_PER_LOG + SEXO + MAG_DIS + UF + ANO_DIC + INCUMBENTE + INCUMBENTE*SEXO + DES_PER_LOG*SEXO, data = Sem_out)
@@ -458,6 +452,9 @@ ggplot(data=GASTOS_ANO, aes(x=UF, y=percentage)) +
   ylab("%") + xlab("") + theme(axis.text=element_text(size=12, face = 'bold'),
                                axis.title=element_text(size=14),
                                strip.text = element_text(size=12))
+
+
+
 
 
 
